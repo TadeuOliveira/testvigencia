@@ -1,0 +1,20 @@
+{
+  "name": "testvigencia",
+  "version": "1.0.0",
+  "description": "Cria um script que testa regras de vigência",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/TadeuOliveira/testvigencia.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/TadeuOliveira/testvigencia/issues"
+  },
+  "homepage": "https://github.com/TadeuOliveira/testvigencia#readme"
+}
