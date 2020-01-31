@@ -1,3 +1,4 @@
+// DEMO
 
 //==============================================================================
 /**
@@ -5,175 +6,88 @@
  *
  */
 class obj_DBwrapperCustom {
-	constructor() {
+	constructor() {		
 		//super()
 		console.log(this.constructor.name);
+		this.areadepreco = 0;
 	}
+
 
     /**
-     * calcula preco para um plano e uma idade
-	 * este é o metodo que tem que ser "overridado" para cada operadora
-     *
-     * @param {Object}           objeto com dados do plano, idade ....
-	 * @return {float}           preco
+     * calcula preco para todos os planos fitrados
+     * 
+     * @param {array}  idades	 array com idades dos beneficiarios
+     * @param {string} entidade  cnpj da entidade no caso de adesao
+	 * @param {integer}  ccbtxid  btxid da condicao comercial
+	 * @return {array}           com o valor calculado para cada plano filtrado
      */
 
-	getPriceForAge(obj) {
-		// pelo menos as seguintes propriedades tem que existir
-		let btxplano = obj.btxplano;
-		let totbens  = obj.totbens;
-		let age      = obj.age;
-		let entidade = obj.entidade;  // pode ser null
-		let desconto = obj.desconto;  // pode ser null or 0
+	listFilteredPlansPrice(idades,entidade,ccbtxid) {
+		console.log(this.constructor.name,this.listFilteredPlansPrice.name,idades,ccbtxid);
+		let result = this.filteredplans;
+		let products_senior = [];
 
-		// array of all price tables available
-		let pricetables = [];
-
-		let precos = this.data[this.contract_type].precos;
-		for ( let i = 0; i < precos.length; i++ ) {
-			if (entidade) {
-	   			if (!precos[i].cnpjentidades.includes(entidade)) {
-	   				continue;
-	   			}
-			}
-
-			if (precos[i].btxplano === btxplano) {
-				pricetables.push(precos[i]);
-				//let ageindex = this._priceIndexForAge(age);
-				//return precos[i].preco[ageindex];
+		let idade_senior_flag = false;
+		for ( let i in idades ) {
+			if ( idades[i] > 59 ) {
+				idade_senior_flag = true;
+				break;
 			}
 		}
 
-		// sort by minvidas
-		pricetables.sort(function(a, b) {
-			return b.minvidas - a.minvidas;
-		});
-		console.log(pricetables);
+		console.log('idade_senior_flag', idade_senior_flag);
+		let planos_senior = [473274150,473275158];
+		for ( let i in result ) {
 
-		for ( let i = 0; i < pricetables.length; i++ ) {
-			if (totbens >= pricetables[i].minvidas) {
-				let ageindex = this._priceIndexForAge(age);
-				let price = pricetables[i].preco[ageindex];
-				if (desconto && desconto > 0) {
-					desconto = (100.0-desconto)/100.0;
-					let tmp = new Decimal(price);
-					tmp = tmp.mul(desconto);
-					price = tmp.toNumber();
-				}
-				return price;
+			let totprice = new Decimal('0');
+			let obj = { btxplano: result[i].btxplano, totbens: idades.length, entidade: null, ccbtxid: ccbtxid };
+			if (entidade)
+				obj.entidade = entidade;
+			
+			
+			for ( let k = 0; k < idades.length; k++ ) {
+				obj.age = idades[k];
+				let preco = this.getPriceForAge(obj);
+				totprice = totprice.plus(preco);
 			}
+			
+			result[i].preco   = totprice.toDecimalPlaces(2).toNumber();
+			result[i].numbens = idades.length;
+
+			if ( planos_senior.includes(result[i].registroans) && idade_senior_flag ) {
+				products_senior.push(result[i]);
+			}
+
 		}
-		return 0.0;
+		
+		products_senior.sort(function(a,b) {return (a.preco > b.preco) ? 1 : ((b.preco > a.preco) ? -1 : 0);} ); 
+		result.sort(function(a,b) {return (a.preco > b.preco) ? 1 : ((b.preco > a.preco) ? -1 : 0);} ); 
+
+		if ( idade_senior_flag )
+			return products_senior;
+
+		return result;
 	}
-
-		/**
-	 * Retorna array com opcoes de vigencia.
-	 *
-	 * @param {string} isodate - Data de referencia em formato ISO 8601 (yyyy-mm-dd).
-	 * @return {array} opcoes de escolha array de  {label:xxx,id:yyy} .
-	 *
-	 *  na grande maioria dos casos label sera a data BR e neste caso id deve ser data ISO
-	 *  opren para ficar flexivel label e id pode ser qualquer coisa
-	 *
-	 */
-	vigenciaOptionsArray(isodate) {
-
-		Date.prototype.addDays = function(days) {
-		    var date = new Date(this.valueOf());
-		    date.setDate(date.getDate() + days);
-		    return date;
-		}
-
-		let tipo_contrato = "ad";
-		console.log(tipo_contrato);
-		let date1 = new Date();
-		let date2 = new Date(); // hoje
-
-
-	
-
-
-		let vigenciaConfig ={
-			 pj: {
-			 	mindays: 0,
-				maxdays: 45,
-				dias: [5,10,15,25]
-			},
-			pf :{
-				mindays: 0,
-				maxdays: 45,
-				dias: [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31]
-			}
-		};
-
-		let vigencia_tipo ={
-			"pj":vigenciaConfig.pj,
-			"pf":vigenciaConfig.pf
-
-		};
-
-		let vigencia_uso = vigencia_tipo[tipo_contrato];
-
-
-		let aux = [];
-
-	 	if ( vigencia_uso === null ) {
-			console.error('regra de vigencia nao definida ' );
-		} else if ( vigencia_uso.dias.indexOf('*') === -1 ) {
-
-			for ( let i = vigencia_uso.mindays; i <= vigencia_uso.maxdays; i++ ) {
-				let tmp = date2.addDays(i);
-				let tmpdate = tmp.getDate();
-				let tmpmonth = (tmp.getMonth() + 1);
-
-					console.log(tmpdate);
-				if ( vigencia_uso.dias.indexOf(tmpdate) > -1 ) {
-					console.log(tmpdate);
-					if ( tmpdate < 10 ) tmpdate = '0' + tmpdate; // warning -- transform to string
-					if ( tmpmonth < 10 ) tmpmonth = '0'+ tmpmonth; // warning -- transform to string
-
-					aux.push({label: tmpdate + '/' + tmpmonth + '/' + tmp.getFullYear(), id: tmp.getFullYear() + '-' + tmpmonth + '-' + tmpdate });
-				}
-
-			}
-
-		}
-
-				
-		//return [{label:"01/05/2019",id:"2019-05-01"},{label:"11/05/2019",id:"2019-05-11"}];
-		return aux;
-	}
-
 
 
 	/**
 	 * Calcula vigencia.
-	 *
+	 * 
 	 * @param {string} isodate - Data de referencia em formato ISO 8601 (yyyy-mm-dd).
 	 * @return {string} data de vigencia em formato ISO 8601.
 	 */
+	
 	computeVigencia(isodate) {
-		console.log('computeVigencia.');
+		let d = new Date(isodate+"T12:00:00");
 		
-		return proposta.getInstance().vigencia_id;
+		// assumindo que a vigencia sera 15 dias a frente
+		d.setDate(d.getDate() + 15);  
+		
+		return d.toISOString().slice(0, 10);
 	}
 
-	/*
-	 * retorna taxa extra (ilegal) se houver
-	 *
-	 * @param  {Object}          objeto com dados do plano, total beneficiarios ....
- 	 * @return {float}           preco
-	*/
-	 /*getTaxaExtra(obj) {
-		 // pelo menos as seguintes propriedades tem que existir
-		 let btxplano = obj.btxplano;
-		 let totbens  = obj.totbens;
-		 let entidade = obj.entidade;  // (CNPJ) pode ser null
 
-		 return 1.0;
-	 }
-	*/
-
+	
 	/**
 	 * Calcula valor dos acessorios.
 	 * 
@@ -202,7 +116,9 @@ class obj_DBwrapperCustom {
 			return res;
 		return null;
 	}
-	
 }
+
+
+
 
 module.exports = obj_DBwrapperCustom
