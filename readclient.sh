@@ -37,5 +37,5 @@ else
 	exit 1
 fi
 rm temp.txt
-echo -e "\e[32mleitura efetuada com sucesso!\e[33m\nAjuste o arquivo assertions.\e[0m"
 ./extractfuncs.sh
+echo -e "\e[32mleitura efetuada com sucesso!\e[33m\nAjuste o arquivo assertions.\e[0m"

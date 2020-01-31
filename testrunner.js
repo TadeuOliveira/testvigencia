@@ -30,10 +30,10 @@ if(!all_assertions.hasOwnProperty(arg)){
 	snooplog('\x1b[31mtipo de teste não encontrado\x1b[0m')
 	process.exit(1)
 } 
-const voa = all_assertions[arg]
+const assertions = all_assertions[arg]
 //depois tem que mudar a linha abaixo para permitir mais tipos de teste
 let globerror = false, error, errormsg = '', auxresp
-voa.forEach((e,i,a) => {
+assertions.forEach((e,i,a) => {
 	error = false
 	auxresp = getRespostas[arg](snoopdog,e.id)
 	if(auxresp.length != e.expected.length) {
