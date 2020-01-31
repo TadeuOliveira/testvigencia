@@ -1,5 +1,6 @@
 //neste arquivo, insira para a função desejada, determinados parâmetros e suas respostas esperadas
 //as respostas esperadas estarão na chave expected, enquanto as outras chaves são os parâmetros
+//algumas datas sugeridas para testes: 2020-02-29, 2020-12-31, 2021-02-28
 const assertions = {
 	vigenciaOptionsArray: [
 		{
