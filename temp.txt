@@ -1,1 +1,1 @@
-/home/tadeusvult/deneuve find: ‘./.dbus’: Permissão negada find: ‘./.cache/doc’: Permissão negada find: ‘./.cache/dconf’: Permissão negada find: ‘./.gvfs’: Permissão negada
+/home/tadeu/deneuve

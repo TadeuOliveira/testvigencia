@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 
 if [[ -z $1 ]]; then
-	echo -e "esqueceu os argumentos, meu consagrado\n"
-	echo "uso: ./readclient.sh <cliente>"
+	echo -e "\n\e[33mesqueceu os argumentos, meu consagrado\n"
+	echo -e "uso: ./readclient.sh <cliente>\e[0m"
 	exit 1
 fi
 mydir=`pwd`
@@ -14,7 +14,7 @@ wc temp.txt > raw
 read lines words characters filename < raw 
 rm raw
 if [[ $words -eq 1 ]]; then
-	echo "diretório deneuve lido com sucesso"
+	echo -e "\e[32mdiretório deneuve lido com sucesso!\e[0m"
 	way=$deneuvePaths
 else
 	echo -e "Os seguintes diretórios chamados deneuve foram encontrados:\n"
@@ -33,8 +33,8 @@ if [[ -d "$way/custom/$1" ]]; then
 	echo -e "custom dir: ${customDir}\n"
 	cp "$customDir/web/venda/js.src/dbwrapper.js" .	
 else
-	echo "cliente inválido"
+	echo -e "\e[31mcliente inválido\e[0m"
 	exit 1
 fi
-echo "leitura efetuada com sucesso. Ajuste o arquivo assertions"
-exit 0
+echo -e "\e[32mleitura efetuada com sucesso!\e[33m\nAjuste o arquivo assertions.\e[0m"
+./extractfuncs.sh
