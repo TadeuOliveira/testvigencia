@@ -20,7 +20,7 @@ const ordenacao = (a,b) => {
 }
 
 if(process.argv.length < 3){
-	console.log('por favor, coloque como argumento o tipo de teste desejado')	
+	snooplog('\x1b[33mpor favor, coloque como argumento o tipo de teste desejado\x1b[0m')	
 	process.exit(1)
 }
 const arg = alias.hasOwnProperty(process.argv[2]) ? 
@@ -36,10 +36,7 @@ let globerror = false, error, errormsg = '', auxresp
 assertions.forEach((e,i,a) => {
 	error = false
 	auxresp = getRespostas[arg](snoopdog,e.id)
-	if(auxresp.length != e.expected.length) {
-		snooplog('\x1b[31mdiscrepância entre número de respostas e asserções\x1b[0m')
-		process.exit(1)		
-	}
+
 	if(arg == 'vigenciaOptionsArray') {
 		auxresp.sort(ordenacao)
 		e.expected.sort(ordenacao)

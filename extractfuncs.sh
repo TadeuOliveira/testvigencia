@@ -11,7 +11,7 @@ if [[ $? -eq 0 ]]; then
 fi
 egrep -q 'this\.getCNPJOperadora\(proposta\.getInstance\(\)\.btxplan\)' dbwrapper.js
 if [[ $? -eq 0 ]]; then
-	echo -en "\nparece que você importou uma administradora.\nInsira uma operadora dela aqui: "
+	echo -en "\nparece que você importou uma administradora.\nInsira o \e[33mCNPJ\e[0m de uma operadora dela aqui: "
 	read tipoop
 	sed -i -e "s/this.getCNPJOperadora(proposta.getInstance().btxplan)/\"$tipoop\"/g" dbwrapper.js
 fi
